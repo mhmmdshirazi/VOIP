@@ -3,13 +3,13 @@
 
 #include <QObject>
 #include <QByteArray>
-//#include <SoundTouch.h>
 #include <QAudioInput>
 #include <QAudioOutput>
 #include<qaudiooutput.h>
 #include <QBuffer>
+#include <QDebug>
 
-
+#include <QTimer>
 class audio : public QObject
 {
     Q_OBJECT
@@ -18,7 +18,9 @@ public:
     void initializeAudio();
     void createAudioInput();
     void createAudioOutput();
-
+    Q_INVOKABLE void startAudioRead();
+    Q_INVOKABLE void test();
+    Q_INVOKABLE void stopAndPlay();
     int ApplyVolumeToSample(short iSample);
 private:
     QAudioDeviceInfo m_Inputdevice;
@@ -29,7 +31,13 @@ private:
     QIODevice *m_input;
     QIODevice *m_output;
     QByteArray m_buffer;
+    QList<QByteArray> saveData;
     int m_iVolume;
+    QTimer *m_pushTimer = nullptr;
+
+private slots:
+    void readMore();
+
 };
 
 #endif // AUDIO_H
