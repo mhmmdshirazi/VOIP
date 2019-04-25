@@ -8,8 +8,9 @@
 #include<qaudiooutput.h>
 #include <QBuffer>
 #include <QDebug>
-
 #include <QTimer>
+
+#include "network.h"
 class audio : public QObject
 {
     Q_OBJECT
@@ -34,9 +35,10 @@ private:
     QList<QByteArray> saveData;
     int m_iVolume;
     QTimer *m_pushTimer = nullptr;
-
+    UDP *client;
 private slots:
     void readMore();
+    void playSound();
 
 };
 

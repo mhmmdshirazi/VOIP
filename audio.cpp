@@ -10,6 +10,7 @@ audio::audio(QObject *parent) : QObject(parent),m_Inputdevice(QAudioDeviceInfo::
   ,   m_buffer(BufferSize, 0)
 {
     m_pushTimer = new QTimer(this);
+    client = new UDP;
     initializeAudio();
 }
 
@@ -84,35 +85,29 @@ void audio::startAudioRead()
 }
 
 
+//void audio::stopAndPlay()
+//{
+//    m_audioInput->stop();
+//    int l = saveData.count();
+//    m_pushTimer->disconnect();
+//    if(l > 0)
+//    {
+//        auto io = m_audioOutput->start();
+//        int chunks = m_audioOutput->bytesFree() / m_audioOutput->periodSize();
+//        //while (chunks) {
+//        for (int i = 0; i < l; i++) {
+//            io->write(saveData[i].data(),saveData[i].count());
+//            while(m_audioOutput->bytesFree() < 4096) {}
+//            qDebug() << m_audioOutput->bytesFree();
+//            qDebug()<< i;
+//        }
+//    }
+//}
+
+
 void audio::stopAndPlay()
 {
-    m_audioInput->stop();
-    int l = saveData.count();
-    m_pushTimer->disconnect();
-    if(l > 0)
-    {
-
-        auto io = m_audioOutput->start();
-
-//        connect(m_pushTimer, &QTimer::timeout, [this, io]() {
-//            if (m_audioOutput->state() == QAudio::StoppedState)
-//                return;
-
-            int chunks = m_audioOutput->bytesFree() / m_audioOutput->periodSize();
-            //while (chunks) {
-            for (int i = 0; i < l; i++) {
-                io->write(saveData[i].data(),saveData[i].count());
-                while(m_audioOutput->bytesFree() < 4096) {}
-                qDebug() << m_audioOutput->bytesFree();
-                qDebug()<< i;
-            }
-
-
-              // --chunks;
-            //}
-//        });
-//        m_pushTimer->start(20);
-    }
+    connect(client,SIGNAL(dataReady()),this,SLOT(playSound()));
 }
 
 
@@ -135,7 +130,16 @@ void audio::readMore()
     //Read sound samples from input device to buffer
     QByteArray temp;
     qint64 l = m_input->read(m_buffer.data(), len);
-    saveData.append(m_buffer);
 
+    client->sendUDP(m_buffer.data(),len);
+    //saveData.append(m_buffer);
+}
+
+void audio::playSound()
+{
+    qDebug("s");
+    auto io = m_audioOutput->start();
+        io->write(client->netData.data(),client->netData.count());
+        //while(m_audioOutput->bytesFree() < 4095) {}
 
 }
