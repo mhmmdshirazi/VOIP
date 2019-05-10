@@ -2,10 +2,9 @@
 #include <QQmlApplicationEngine>
 #include <QQmlEngine>
 #include <QQmlContext>
+#include <QQuickWindow>
 #include "phone.h"
-#include <QStandardPaths>
-#include <QFile>
-#include <QDir>
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -17,25 +16,11 @@ int main(int argc, char *argv[])
 /////////////////////user code
 ///
     phone *myPhone = new phone();
-    engine.rootContext()->setContextProperty("audio",myPhone);
-    auto path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    auto fileName= path + "/myfile.txt";
-    QDir _dir;
-    // check if "scripts" folder exists
-    int _dirExists = _dir.exists(path);
-    // if not, create it
-    if( !_dirExists )
-        _dir.mkpath(path);
+    engine.rootContext()->setContextProperty("phone",myPhone);
 
-    QFile myFile(fileName);
-    if ( myFile.open(QIODevice::ReadWrite) )
-    {
-        qDebug("open shod");
-        QTextStream stream( &myFile );
-        //stream << "something" << endl;
-        qDebug() << stream.readAll();
-    }
-
+    QObject *topLevel = engine.rootObjects().value(0);
+    QQuickWindow *window = qobject_cast<QQuickWindow *>(topLevel);
+    QObject::connect(myPhone,SIGNAL(onCalling(qint16)),window,SLOT(setTimer()));
 ///////////////////////////////
     if (engine.rootObjects().isEmpty())
         return -1;

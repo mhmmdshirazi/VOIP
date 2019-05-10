@@ -12,6 +12,8 @@ phone::phone(QObject *parent) : QObject(parent),m_Inputdevice(QAudioDeviceInfo::
     m_pushTimer = new QTimer(this);
     client = new UDP;
     initializeAudio();
+    myPhoneNumber = loadPhoneNumber();
+    connect(client,SIGNAL(callNotif(qint16)),this,SLOT(handleCall(qint16)));
 }
 
 //Initialize audio
@@ -119,6 +121,46 @@ void phone::requestCall(qint16 phoneNumber)
     client->requestCall(phoneNumber);
 }
 
+void phone::savePhoneNumber(qint16 phoneNumber)
+{
+    auto path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    auto fileName= path + "/myNumber.txt";
+    QDir _dir;
+    // check if path exists
+    int _dirExists = _dir.exists(path);
+    // if not, create it
+    if( !_dirExists )
+        _dir.mkpath(path);
+
+    QFile myFile(fileName);
+    if ( myFile.open(QIODevice::ReadWrite) )
+    {
+        QTextStream stream( &myFile );
+        stream << QString("%1").arg(phoneNumber);
+    }
+    myPhoneNumber = phoneNumber;
+}
+
+qint16 phone::loadPhoneNumber()
+{
+    auto path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    auto fileName= path + "/myNumber.txt";
+    QDir _dir;
+    // check if path exists
+    int _dirExists = _dir.exists(path);
+    // if not, create it
+    if( !_dirExists )
+        _dir.mkpath(path);
+
+    QFile myFile(fileName);
+    if ( myFile.open(QIODevice::ReadWrite) )
+    {
+        QTextStream stream( &myFile );
+        return stream.readAll().toInt();
+    }
+    return -1;
+}
+
 void phone::readMore()
 {
     //Return if audio input is null
@@ -148,4 +190,12 @@ void phone::playSound()
     m_output->write(client->netData.data(),client->netData.count());
     //qDebug() << (int)client->netData.data()[100];
 
+}
+
+void phone::handleCall(qint16 phoneNumber)
+{
+    if (phoneNumber == myPhoneNumber) {
+        qDebug() << "calling "<< phoneNumber;
+        emit onCalling(phoneNumber);
+    }
 }

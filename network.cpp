@@ -55,9 +55,10 @@ void UDP::notification()
     doc.setContent(notifData);
     QDomNodeList list= doc.elementsByTagName("call");
     //QString helloWorld=list.at(0).toElement().text();
-    qDebug() << "call : " << list.at(0).toElement().text().toInt();
     qDebug() << "Message from: " << sender.toString();
     qDebug() << "Message port: " << senderPort;
     qDebug() << "notif data:" << notifData.data();
-
+    if (list.count()) {
+        emit callNotif(list.at(0).toElement().text().toInt());
+    }
 }

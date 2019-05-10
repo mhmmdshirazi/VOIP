@@ -1,6 +1,9 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.5
+import QtQuick.Controls.Material 2.3
 Item {
+    Material.theme: Material.Dark
+    Material.accent: Material.DeepOrange
 
     Timer {
         interval: 16
@@ -17,7 +20,7 @@ Item {
         y: 178
         text: qsTr("Start Read")
         onClicked: {
-            audio.startAudioRead()
+            phone.startAudioRead()
         }
     }
 
@@ -34,7 +37,7 @@ Item {
         y: 323
         text: qsTr("Start Play back")
         onClicked: {
-            audio.stopAndPlay()
+            phone.stopAndPlay()
         }
     }
 
@@ -54,10 +57,19 @@ Item {
         y: 395
         text: "Call"
         onClicked: {
-            audio.requestCall(phoneNumber.text)
+            phone.requestCall(phoneNumber.text)
         }
     }
 
 
 
 }
+
+
+
+
+
+/*##^## Designer {
+    D{i:0;autoSize:true;height:480;width:640}
+}
+ ##^##*/

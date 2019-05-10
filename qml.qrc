@@ -3,5 +3,8 @@
         <file>main.qml</file>
         <file>Phone.qml</file>
         <file>Settings.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>PageBG.qml</file>
+        <file>PageBGForm.ui.qml</file>
     </qresource>
 </RCC>

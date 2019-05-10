@@ -9,6 +9,9 @@
 #include <QBuffer>
 #include <QDebug>
 #include <QTimer>
+#include <QStandardPaths>
+#include <QFile>
+#include <QDir>
 
 #include "network.h"
 class phone : public QObject
@@ -22,6 +25,8 @@ public:
     Q_INVOKABLE void startAudioRead();
     Q_INVOKABLE void stopAndPlay();
     Q_INVOKABLE void requestCall(qint16 phoneNumber);
+    Q_INVOKABLE void savePhoneNumber(qint16 phoneNumber);
+    Q_INVOKABLE qint16 loadPhoneNumber();
     int ApplyVolumeToSample(short iSample);
 private:
     QAudioDeviceInfo m_Inputdevice;
@@ -36,10 +41,14 @@ private:
     int m_iVolume;
     QTimer *m_pushTimer = nullptr;
     UDP *client;
+    qint16 myPhoneNumber;
 private slots:
     void readMore();
     void playSound();
-
+public slots:
+    void handleCall(qint16 phoneNumber);
+signals:
+    void onCalling(qint16 callerNum);
 };
 
 #endif // AUDIO_H

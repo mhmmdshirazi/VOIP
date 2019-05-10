@@ -25,6 +25,7 @@ private:
     QUdpSocket *notificationSocket;
 signals:
     void dataReady();
+    void callNotif(qint16 destNumber);
 };
 
 #endif // NETWORK_H
