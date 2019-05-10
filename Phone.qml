@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.3
 Item {
+
     Material.theme: Material.Dark
     Material.accent: Material.DeepOrange
 
@@ -14,37 +15,14 @@ Item {
         }
     }
 
-    Button {
-        id: start
-        x: 138
-        y: 178
-        text: qsTr("Start Read")
-        onClicked: {
-            phone.startAudioRead()
-        }
-    }
-
-    ProgressBar {
-        id: progressBar
-        x: 88
-        y: 277
-        value: 0.5
-    }
-
-    Button {
-        id: stop
-        x: 134
-        y: 323
-        text: qsTr("Start Play back")
-        onClicked: {
-            phone.stopAndPlay()
-        }
-    }
-
     TextField {
         id: phoneNumber
-        x: 88
-        y: 395
+//        focusChanged: {
+//            InputMethod.hide()
+//        }
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.topMargin: parent.height * 0.2
         placeholderText: "Phone Number"
         //text: qsTr("Enter Phone Number")
         clip: false
@@ -53,8 +31,9 @@ Item {
 
     RoundButton {
         id: call
-        x: 306
-        y: 395
+        anchors.verticalCenter: phoneNumber.verticalCenter
+        anchors.left: phoneNumber.right
+        anchors.leftMargin: 50
         text: "Call"
         onClicked: {
             phone.requestCall(phoneNumber.text)

@@ -38,8 +38,9 @@ Window {
         anchors.right: parent.right
         anchors.bottomMargin: 100
         currentIndex: pageChooser.currentIndex
+        z: 10
         Phone {
-
+            id:phoneTab
         }
         Settings {
 
@@ -87,7 +88,16 @@ Window {
     PageBG {
         anchors.fill: parent
         z: -10
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+            onPressed: {
+                console.log("clicked")
+                Qt.inputMethod.hide()
+            }
+        }
     }
+
 
 //    BackGround {
 //        id: backGround

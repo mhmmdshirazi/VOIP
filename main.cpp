@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 
     QObject *topLevel = engine.rootObjects().value(0);
     QQuickWindow *window = qobject_cast<QQuickWindow *>(topLevel);
+
     QObject::connect(myPhone,SIGNAL(onCalling(qint16)),window,SLOT(setTimer()));
 ///////////////////////////////
     if (engine.rootObjects().isEmpty())
