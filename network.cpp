@@ -10,22 +10,10 @@ UDP::UDP(QObject *parent) :
     connect(socket, SIGNAL(readyRead()),this,SLOT(readReady()));
 }
 
-void UDP::HelloUDP()
-{
-    QByteArray Data;
-    Data.append("Hello from UDP");
-
-    // Sends the datagram datagram
-    // to the host address and at port.
-    // qint64 QUdpSocket::writeDatagram(const QByteArray & datagram,
-    //                      const QHostAddress & host, quint16 port)
-    socket->writeDatagram(Data, QHostAddress::LocalHost, 1234);
-    qDebug("s");
-
-}
 
 void UDP::sendUDP(char *data, qint64 len)
 {
+    qDebug() << "mige befresta";
     socket->writeDatagram(data,len, QHostAddress::Broadcast, 1234);
 }
 

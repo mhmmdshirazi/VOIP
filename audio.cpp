@@ -1,5 +1,5 @@
 #include "audio.h"
-const int BufferSize = 10000;
+const int BufferSize = 500;
 
 audio::audio(QObject *parent) : QObject(parent),m_Inputdevice(QAudioDeviceInfo::defaultInputDevice())
   ,   m_Outputdevice(QAudioDeviceInfo::defaultOutputDevice())
@@ -66,6 +66,7 @@ void audio::createAudioInput()
     qreal linearVolume = QAudio::convertVolume(100 / qreal(100),
                                                QAudio::LogarithmicVolumeScale,
                                                QAudio::LinearVolumeScale);
+//    m_audioInput->setBufferSize(500);
     m_audioInput->setVolume(linearVolume);
     qDebug() << m_Inputdevice.preferredFormat();
 }
@@ -77,11 +78,13 @@ void audio::createAudioInput()
 
 void audio::startAudioRead()
 {
-
+//    m_pushTimer->start(50);
     m_input = m_audioInput->start();
     //connect readyRead signal to readMore slot.
     //Call readmore when audio samples fill in inputbuffer
     connect(m_input, SIGNAL(readyRead()), SLOT(readMore()));
+
+//    connect(m_pushTimer, SIGNAL(timeout()), SLOT(readMore()));
 }
 
 
@@ -134,10 +137,10 @@ void audio::readMore()
     QByteArray buffer(len, 0);
 
     qint64 l = m_input->read(buffer.data(), len);
-    if (l > 0) {
+    //if (l > 0) {
         qDebug() << "l is " << l <<" len is" << len << " ye data is :" << (int)buffer.at(0) ;
         client->sendUDP(buffer.data(),l);
-    }
+    //}
     //client->sendUDP("salam fatemeye man",strlen("salam fatemeye man"));
     //buffer.resize(l);
     //saveData.append(buffer);
