@@ -6,7 +6,7 @@ UDP::UDP(QObject *parent) :
 {
     // create a QUDP socket
     socket = new QUdpSocket(this);
-    socket->bind(QHostAddress::LocalHost, 1234);
+    socket->bind(QHostAddress::Any, 1235);
     connect(socket, SIGNAL(readyRead()),this,SLOT(readReady()));
 }
 
@@ -26,21 +26,20 @@ void UDP::HelloUDP()
 
 void UDP::sendUDP(char *data, qint64 len)
 {
-    socket->writeDatagram(data,len, QHostAddress::LocalHost, 1234);
+    socket->writeDatagram(data,len, QHostAddress::Broadcast, 1234);
 }
 
 void UDP::readReady()
 {
     // when data comes in
     qDebug("miad inja");
-
     netData.resize(socket->pendingDatagramSize());
     QHostAddress sender;
     quint16 senderPort;
     socket->readDatagram(netData.data(), netData.size(),
                          &sender, &senderPort);
 
-    qDebug() << "Message from: " << sender.toString();
-    qDebug() << "Message port: " << senderPort;
+//    qDebug() << "Message from: " << sender.toString();
+//    qDebug() << "Message port: " << senderPort;
     emit dataReady();
 }

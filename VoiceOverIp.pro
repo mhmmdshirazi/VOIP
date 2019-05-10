@@ -35,3 +35,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     audio.h \
     network.h
+
+
+ios {
+    QMAKE_INFO_PLIST = ios/Info.plist
+}

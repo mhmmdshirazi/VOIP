@@ -1,5 +1,5 @@
 #include "audio.h"
-const int BufferSize = 14096;
+const int BufferSize = 10000;
 
 audio::audio(QObject *parent) : QObject(parent),m_Inputdevice(QAudioDeviceInfo::defaultInputDevice())
   ,   m_Outputdevice(QAudioDeviceInfo::defaultOutputDevice())
@@ -18,10 +18,10 @@ audio::audio(QObject *parent) : QObject(parent),m_Inputdevice(QAudioDeviceInfo::
 void audio::initializeAudio()
 {
 
-    m_format.setSampleRate(44100); //set frequency to 8000
+    m_format.setSampleRate(8000); //set frequency to 8000
     m_format.setChannelCount(1); //set channels to mono
     m_format.setSampleSize(16); //set sample sze to 16 bit
-    m_format.setSampleType(QAudioFormat::SignedInt ); //Sample type as usigned integer sample
+    m_format.setSampleType(QAudioFormat::SignedInt); //Sample type as usigned integer sample
     m_format.setByteOrder(QAudioFormat::LittleEndian); //Byte order
     m_format.setCodec("audio/pcm"); //set codec as simple audio/pcm
 
@@ -50,7 +50,6 @@ void audio::createAudioOutput()
     qreal linearVolume = QAudio::convertVolume(100 / qreal(100),
                                                QAudio::LogarithmicVolumeScale,
                                                QAudio::LinearVolumeScale);
-
     m_audioOutput->setVolume(linearVolume);
 }
 
@@ -63,6 +62,7 @@ void audio::createAudioInput()
         m_input = 0;
     }
     m_audioInput = new QAudioInput(m_Inputdevice, m_format, this);
+
     qreal linearVolume = QAudio::convertVolume(100 / qreal(100),
                                                QAudio::LogarithmicVolumeScale,
                                                QAudio::LinearVolumeScale);
@@ -96,10 +96,10 @@ void audio::startAudioRead()
 //        int chunks = m_audioOutput->bytesFree() / m_audioOutput->periodSize();
 //        //while (chunks) {
 //        for (int i = 0; i < l; i++) {
+//            while(m_audioOutput->bytesFree() < saveData[i].count()) {}
 //            io->write(saveData[i].data(),saveData[i].count());
-//            while(m_audioOutput->bytesFree() < 4096) {}
-//            qDebug() << m_audioOutput->bytesFree();
-//            qDebug()<< i;
+//            qDebug() <<"free"<< m_audioOutput->bytesFree();
+//            qDebug() <<"num"<< i;
 //        }
 //    }
 //}
@@ -107,6 +107,8 @@ void audio::startAudioRead()
 
 void audio::stopAndPlay()
 {
+    m_output = m_audioOutput->start();
+    m_audioInput->stop();
     connect(client,SIGNAL(dataReady()),this,SLOT(playSound()));
 }
 
@@ -124,22 +126,28 @@ void audio::readMore()
     //Return if audio input is null
     if(!m_audioInput)
         return;
-    //Check the number of samples in input buffer
     qint64 len = m_audioInput->bytesReady();
-    qDebug() <<len;
-    //Read sound samples from input device to buffer
-    QByteArray temp;
-    qint64 l = m_input->read(m_buffer.data(), len);
+    const int BufferSize = 4096;
+    if (len > BufferSize)
+        len = BufferSize;
 
-    client->sendUDP(m_buffer.data(),len);
-    //saveData.append(m_buffer);
+    QByteArray buffer(len, 0);
+
+    qint64 l = m_input->read(buffer.data(), len);
+    if (l > 0) {
+        qDebug() << "l is " << l <<" len is" << len << " ye data is :" << (int)buffer.at(0) ;
+        client->sendUDP(buffer.data(),l);
+    }
+    //client->sendUDP("salam fatemeye man",strlen("salam fatemeye man"));
+    //buffer.resize(l);
+    //saveData.append(buffer);
 }
 
 void audio::playSound()
 {
-    qDebug("s");
-    auto io = m_audioOutput->start();
-        io->write(client->netData.data(),client->netData.count());
-        //while(m_audioOutput->bytesFree() < 4095) {}
+//    qDebug()<< "net :" << client->netData.count() << "audio :"<< m_audioOutput->bytesFree();
+//    while(m_audioOutput->bytesFree() < client->netData.count()) {}
+    m_output->write(client->netData.data(),client->netData.count());
+    //qDebug() << (int)client->netData.data()[100];
 
 }
