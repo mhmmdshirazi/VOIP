@@ -1,7 +1,7 @@
-#include "audio.h"
+#include "phone.h"
 const int BufferSize = 500;
 
-audio::audio(QObject *parent) : QObject(parent),m_Inputdevice(QAudioDeviceInfo::defaultInputDevice())
+phone::phone(QObject *parent) : QObject(parent),m_Inputdevice(QAudioDeviceInfo::defaultInputDevice())
   ,   m_Outputdevice(QAudioDeviceInfo::defaultOutputDevice())
   ,   m_audioInput(0)
   ,   m_audioOutput(0)
@@ -15,7 +15,7 @@ audio::audio(QObject *parent) : QObject(parent),m_Inputdevice(QAudioDeviceInfo::
 }
 
 //Initialize audio
-void audio::initializeAudio()
+void phone::initializeAudio()
 {
 
     m_format.setSampleRate(8000); //set frequency to 8000
@@ -43,7 +43,7 @@ void audio::initializeAudio()
     createAudioOutput();
 }
 
-void audio::createAudioOutput()
+void phone::createAudioOutput()
 {
     qDebug() << m_Outputdevice.deviceName();
     m_audioOutput = new QAudioOutput(m_Outputdevice, m_format, this);
@@ -55,7 +55,7 @@ void audio::createAudioOutput()
 
 
 
-void audio::createAudioInput()
+void phone::createAudioInput()
 {
     if (m_input != 0) {
         disconnect(m_input, 0, this, 0);
@@ -76,14 +76,13 @@ void audio::createAudioInput()
 /// \brief audio::startAudioRead
 ///
 
-void audio::startAudioRead()
+void phone::startAudioRead()
 {
 //    m_pushTimer->start(50);
     m_input = m_audioInput->start();
     //connect readyRead signal to readMore slot.
     //Call readmore when audio samples fill in inputbuffer
     connect(m_input, SIGNAL(readyRead()), SLOT(readMore()));
-
 //    connect(m_pushTimer, SIGNAL(timeout()), SLOT(readMore()));
 }
 
@@ -108,23 +107,19 @@ void audio::startAudioRead()
 //}
 
 
-void audio::stopAndPlay()
+void phone::stopAndPlay()
 {
     m_output = m_audioOutput->start();
     m_audioInput->stop();
     connect(client,SIGNAL(dataReady()),this,SLOT(playSound()));
 }
 
-
-void audio::test()
+void phone::requestCall(qint16 phoneNumber)
 {
-    qDebug() << "len is ::" ;
+    client->requestCall(phoneNumber);
 }
 
-///////////////////////////////////
-/// \brief audio::readMore
-///
-void audio::readMore()
+void phone::readMore()
 {
     //Return if audio input is null
     if(!m_audioInput)
@@ -146,7 +141,7 @@ void audio::readMore()
     //saveData.append(buffer);
 }
 
-void audio::playSound()
+void phone::playSound()
 {
 //    qDebug()<< "net :" << client->netData.count() << "audio :"<< m_audioOutput->bytesFree();
 //    while(m_audioOutput->bytesFree() < client->netData.count()) {}

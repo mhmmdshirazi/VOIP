@@ -11,17 +11,17 @@
 #include <QTimer>
 
 #include "network.h"
-class audio : public QObject
+class phone : public QObject
 {
     Q_OBJECT
 public:
-    explicit audio(QObject *parent = nullptr);
+    explicit phone(QObject *parent = nullptr);
     void initializeAudio();
     void createAudioInput();
     void createAudioOutput();
     Q_INVOKABLE void startAudioRead();
-    Q_INVOKABLE void test();
     Q_INVOKABLE void stopAndPlay();
+    Q_INVOKABLE void requestCall(qint16 phoneNumber);
     int ApplyVolumeToSample(short iSample);
 private:
     QAudioDeviceInfo m_Inputdevice;

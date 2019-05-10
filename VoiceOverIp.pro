@@ -1,6 +1,8 @@
 QT += quick
 QT += multimedia
 QT += network
+QT += xml
+Qt += core
 CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
@@ -16,8 +18,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-    audio.cpp \
-    network.cpp
+    network.cpp \
+    phone.cpp
 
 RESOURCES += qml.qrc
 
@@ -33,8 +35,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    audio.h \
-    network.h
+    network.h \
+    phone.h
 
 
 ios {
