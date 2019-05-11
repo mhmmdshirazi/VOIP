@@ -11,11 +11,14 @@ Window {
 
     Material.theme: Material.Dark
     Material.accent: Material.DeepOrange
-
-
-    function setTimer() {
+    function incommingCall(callerID) {
         calling.running = true
+        callerIdInd.text = qsTr("Incoming Call From: %1").arg(callerID)
+        answer.visible = true
+        reject.visible = true
+        console.log("calllllll")
     }
+
     TabBar {
         anchors.bottom: parent.bottom
         width: parent.width
@@ -47,6 +50,36 @@ Window {
         }
     }
 
+    Button {
+        id: answer
+        height: 36
+        width: 130
+        anchors.left: parent.left
+        anchors.leftMargin:30
+        anchors.top: callingBar.bottom
+        visible: false
+        text: qsTr("Answer")
+        background: Rectangle{
+            color: answer.down ? "#A0FFA0" : "#00EE00"
+            border.color: answer.down ? "#000000" : "#00EE00"
+        }
+    }
+
+    Button {
+        id: reject
+        width: 130
+        height: 36
+        anchors.right: parent.right
+        anchors.rightMargin: 30
+        anchors.top: callingBar.bottom
+        visible: false
+        text: qsTr("Reject")
+        background: Rectangle{
+            color: reject.down ? "#FFA0A0" : "#FF0000"
+            border.color: reject.down ? "#000000" : "#FF0000"
+        }
+    }
+
     ProgressBar {
         id: callingBar
         y: 0
@@ -56,6 +89,7 @@ Window {
         anchors.rightMargin: 0
         anchors.left: parent.left
         anchors.leftMargin: 0
+
         background: Rectangle {
             implicitHeight: 0
             color: "#191919"
@@ -70,7 +104,18 @@ Window {
                 color: "#00FF00"
             }
         }
-
+        Text {
+            id: callerIdInd
+            visible: false
+            anchors.fill: parent
+            anchors.horizontalCenter: parent.horizontalCenter
+            z:10
+            color: "#a0a0a0"
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.bold: true
+            font.pixelSize: 14
+        }
         Timer {
             id: calling
             repeat: true
@@ -79,8 +124,16 @@ Window {
             onTriggered: {
                 parent.visible = true
                 callingBar.value = callingBar.value + 0.01
+                callerIdInd.visible = true
+                answer.visible = true
+                reject.visible = true
                 if(callingBar.value >= 1) {
+                    calling.running = 0
                     callingBar.value = 0
+                    callerIdInd.visible = false
+                    parent.visible = false
+                    answer.visible = false
+                    reject.visible = false
                 }
             }
         }
@@ -99,12 +152,17 @@ Window {
     }
 
 
-//    BackGround {
-//        id: backGround
-//        anchors.fill: parent
-//    }
+
+
+
+    //    BackGround {
+    //        id: backGround
+    //        anchors.fill: parent
+    //    }
 
 }
+
+
 
 
 

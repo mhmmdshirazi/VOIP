@@ -6,7 +6,7 @@ UDP::UDP(QObject *parent) :
 {
     // create a QUDP socket
     socket = new QUdpSocket(this);
-    socket->bind(QHostAddress::Any, 1235);
+    socket->bind(QHostAddress("192.168.1.4"), 1235);
     connect(socket, SIGNAL(readyRead()),this,SLOT(readReady()));
 
     notificationSocket = new QUdpSocket(this);
@@ -18,12 +18,12 @@ UDP::UDP(QObject *parent) :
 
 void UDP::sendUDP(char *data, qint64 len)
 {
-    socket->writeDatagram(data,len, QHostAddress::Broadcast, 1234);
+    socket->writeDatagram(data,len, QHostAddress("192.168.1.2"), 1235);
 }
 
-void UDP::requestCall(qint16 phoneNumber)
+void UDP::requestCall(qint16 phoneNumber,qint16 myPhoneNumber)
 {
-    QString sendNotif = QString("<call>%1</call>").arg(phoneNumber);
+    QString sendNotif = QString("<phone><call>%1</call><callerid>%2</callerid></phone>").arg(phoneNumber).arg(myPhoneNumber);
     notificationSocket->writeDatagram(sendNotif.toLocal8Bit(),sendNotif.count(),QHostAddress::Broadcast,2020);
 }
 
@@ -38,7 +38,7 @@ void UDP::readReady()
                          &sender, &senderPort);
 
     qDebug() << "Message from: " << sender.toString();
-//    qDebug() << "Message port: " << senderPort;
+    qDebug() << "Message port: " << senderPort;
     emit dataReady();
 }
 
@@ -50,15 +50,17 @@ void UDP::notification()
     quint16 senderPort;
     notificationSocket->readDatagram(notifData.data(),notifData.size(),&sender,&senderPort);
 
-    //Get your xml into xmlText(you can use QString instead og QByteArray)
-    QDomDocument doc;
-    doc.setContent(notifData);
-    QDomNodeList list= doc.elementsByTagName("call");
-    //QString helloWorld=list.at(0).toElement().text();
+
     qDebug() << "Message from: " << sender.toString();
     qDebug() << "Message port: " << senderPort;
     qDebug() << "notif data:" << notifData.data();
-    if (list.count()) {
-        emit callNotif(list.at(0).toElement().text().toInt());
+
+// Manage incomming calls
+    QDomDocument doc;
+    doc.setContent(notifData);
+    QDomNodeList PN= doc.elementsByTagName("call");
+    QDomNodeList cID = doc.elementsByTagName("callerid");
+    if (PN.count()) {
+        emit callNotif(PN.at(0).toElement().text().toInt(),cID.at(0).toElement().text().toInt(),sender);
     }
 }

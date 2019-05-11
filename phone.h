@@ -46,9 +46,9 @@ private slots:
     void readMore();
     void playSound();
 public slots:
-    void handleCall(qint16 phoneNumber);
+    void handleCall(qint16 phoneNumber, qint16 callerID, QHostAddress callerIP);
 signals:
-    void onCalling(qint16 callerNum);
+    void onCalling(QVariant callerNum);
 };
 
 #endif // AUDIO_H

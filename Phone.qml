@@ -36,7 +36,23 @@ Item {
         anchors.leftMargin: 50
         text: "Call"
         onClicked: {
-            phone.requestCall(phoneNumber.text)
+            callingCounterTimer.running = true
+            callingCounterTimer.restart()
+        }
+        Timer {
+            id: callingCounterTimer
+            interval: 50
+            repeat: true
+            running: false
+            property int callCounter: 0
+            onTriggered: {
+                phone.requestCall(phoneNumber.text)
+                callCounter = callCounter +1
+                if (callCounter > 500) {
+                    callCounter = 0
+                    running = false
+                }
+            }
         }
     }
 

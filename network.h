@@ -15,7 +15,7 @@ public:
     explicit UDP(QObject *parent = nullptr);
     void HelloUDP();
     void sendUDP(char *data, qint64 len);
-    void requestCall(qint16 phoneNumber);
+    void requestCall(qint16 phoneNumber,qint16 myPhoneNumber);
     QByteArray netData;
 public slots:
     void readReady();
@@ -25,7 +25,7 @@ private:
     QUdpSocket *notificationSocket;
 signals:
     void dataReady();
-    void callNotif(qint16 destNumber);
+    void callNotif(qint16 destNumber, qint16 callerID, QHostAddress callerIP);
 };
 
 #endif // NETWORK_H

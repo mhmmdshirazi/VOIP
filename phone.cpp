@@ -13,7 +13,8 @@ phone::phone(QObject *parent) : QObject(parent),m_Inputdevice(QAudioDeviceInfo::
     client = new UDP;
     initializeAudio();
     myPhoneNumber = loadPhoneNumber();
-    connect(client,SIGNAL(callNotif(qint16)),this,SLOT(handleCall(qint16)));
+    connect(client,SIGNAL(callNotif(qint16,qint16,QHostAddress)),this,SLOT(handleCall(qint16,qint16,QHostAddress)));
+    client->sendUDP("salam",6);
 }
 
 //Initialize audio
@@ -118,7 +119,7 @@ void phone::stopAndPlay()
 
 void phone::requestCall(qint16 phoneNumber)
 {
-    client->requestCall(phoneNumber);
+    client->requestCall(phoneNumber,myPhoneNumber);
 }
 
 void phone::savePhoneNumber(qint16 phoneNumber)
@@ -192,10 +193,10 @@ void phone::playSound()
 
 }
 
-void phone::handleCall(qint16 phoneNumber)
+void phone::handleCall(qint16 phoneNumber, qint16 callerID, QHostAddress callerIP)
 {
     if (phoneNumber == myPhoneNumber) {
-        qDebug() << "calling "<< phoneNumber;
-        emit onCalling(phoneNumber);
+        qDebug() << "calling "<< callerID;
+        emit onCalling(callerID);
     }
 }
