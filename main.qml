@@ -11,12 +11,13 @@ Window {
 
     Material.theme: Material.Dark
     Material.accent: Material.DeepOrange
-    function incommingCall(callerID) {
+    property int callerID: 0
+    function incommingCall(CI) {
         calling.running = true
         callerIdInd.text = qsTr("Incoming Call From: %1").arg(callerID)
         answer.visible = true
         reject.visible = true
-        console.log("calllllll")
+        callerID = CI
     }
 
     TabBar {
@@ -62,6 +63,9 @@ Window {
         background: Rectangle{
             color: answer.down ? "#A0FFA0" : "#00EE00"
             border.color: answer.down ? "#000000" : "#00EE00"
+        }
+        onClicked: {
+            phone.requestAnswer(callerID)
         }
     }
 
@@ -150,15 +154,6 @@ Window {
             }
         }
     }
-
-
-
-
-
-    //    BackGround {
-    //        id: backGround
-    //        anchors.fill: parent
-    //    }
 
 }
 

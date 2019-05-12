@@ -25,6 +25,7 @@ public:
     Q_INVOKABLE void startAudioRead();
     Q_INVOKABLE void stopAndPlay();
     Q_INVOKABLE void requestCall(qint16 phoneNumber);
+    Q_INVOKABLE void requestAnswer(qint16 callerID);
     Q_INVOKABLE void savePhoneNumber(qint16 phoneNumber);
     Q_INVOKABLE qint16 loadPhoneNumber();
     int ApplyVolumeToSample(short iSample);
@@ -42,11 +43,14 @@ private:
     QTimer *m_pushTimer = nullptr;
     UDP *client;
     qint16 myPhoneNumber;
+
+    qint16 callingNumber;
 private slots:
     void readMore();
     void playSound();
 public slots:
     void handleCall(qint16 phoneNumber, qint16 callerID, QHostAddress callerIP);
+    void handleAnswer(qint16 destNumber, qint16 callerID, QHostAddress destIP);
 signals:
     void onCalling(QVariant callerNum);
 };

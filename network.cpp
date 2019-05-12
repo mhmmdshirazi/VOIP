@@ -27,6 +27,12 @@ void UDP::requestCall(qint16 phoneNumber,qint16 myPhoneNumber)
     notificationSocket->writeDatagram(sendNotif.toLocal8Bit(),sendNotif.count(),QHostAddress::Broadcast,2020);
 }
 
+void UDP::answerCall(qint16 myPhoneNumber, qint16 callerID)
+{
+    QString sendNotif = QString("<phone><answer>%1</answer><to>%2</to></phone>").arg(myPhoneNumber).arg(callerID);
+    notificationSocket->writeDatagram(sendNotif.toLocal8Bit(),sendNotif.count(),QHostAddress::Broadcast,2020);
+}
+
 void UDP::readReady()
 {
     // when data comes in
@@ -44,23 +50,28 @@ void UDP::readReady()
 
 void UDP::notification()
 {
-    qDebug() << "miad tu notif";
     QByteArray notifData(notificationSocket->pendingDatagramSize(),0);
     QHostAddress sender;
     quint16 senderPort;
     notificationSocket->readDatagram(notifData.data(),notifData.size(),&sender,&senderPort);
 
 
-    qDebug() << "Message from: " << sender.toString();
-    qDebug() << "Message port: " << senderPort;
-    qDebug() << "notif data:" << notifData.data();
 
-// Manage incomming calls
     QDomDocument doc;
     doc.setContent(notifData);
+    // Manage incomming calls
     QDomNodeList PN= doc.elementsByTagName("call");
     QDomNodeList cID = doc.elementsByTagName("callerid");
-    if (PN.count()) {
+    if (PN.at(0).toElement().text().toInt() != 0 && PN.count()) {
         emit callNotif(PN.at(0).toElement().text().toInt(),cID.at(0).toElement().text().toInt(),sender);
     }
+    // Manage Answer
+    QDomNodeList PNAns= doc.elementsByTagName("answer");
+    QDomNodeList cIDAns = doc.elementsByTagName("to");
+    if (PNAns.at(0).toElement().text().toInt() != 0 && PNAns.count()) {
+        emit answerNotif(PNAns.at(0).toElement().text().toInt(),cIDAns.at(0).toElement().text().toInt(),sender);
+    }
+
+// Manage answer msg
+
 }
