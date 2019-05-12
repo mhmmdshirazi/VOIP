@@ -45,6 +45,7 @@ Window {
         phone.setCallState(3);
         swipeView.visible= false
         talkingPage.visible=true
+        callTimer.running = true
     }
 
     TabBar {
@@ -96,6 +97,7 @@ Window {
             phone.setCallState(3);
             swipeView.visible= false
             talkingPage.visible=true
+            callTimer.running = true
         }
     }
 
@@ -178,10 +180,36 @@ Window {
         id: talkingPage
         anchors.fill: parent
         visible: false
+        property int callTime: 0
+        Timer {
+            id: callTimer
+            interval: 1000
+            repeat: true
+            running: false
+
+            onTriggered: {
+                talkingPage.callTime = talkingPage.callTime + 1
+                callTimeInd.text = qsTr("%1 : %2 : %3").arg((talkingPage.callTime/3600)%24|0).arg((talkingPage.callTime/60)%60|0).arg(talkingPage.callTime % 60)
+            }
+        }
+        Text {
+            id: callTimeInd
+            anchors.bottom: endCall.top
+            anchors.bottomMargin: 200
+            anchors.horizontalCenter: parent.horizontalCenter
+            z:10
+            color: "#a0a0a0"
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.bold: true
+            font.pixelSize: 20
+            text: "0 : 0 : 0"
+        }
+
         Button {
             id: endCall
-            width: 130
-            height: 36
+            width: 200
+            height: 60
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: parent.height*0.7
@@ -193,9 +221,12 @@ Window {
             }
 
             onClicked: {
-                phone.setCallState(3);
+                phone.setCallState(0);
                 swipeView.visible= true
                 talkingPage.visible=false
+                talkingPage.callTime = 0
+                callTimer.running = false
+                callTimeInd.text = "0 : 0 : 0"
                 ///TODO: endcall
             }
         }

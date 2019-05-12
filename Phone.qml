@@ -45,7 +45,7 @@ Item {
                 phone.requestCall(phoneNumber.text)
                 callCounter = callCounter +1
                 console.log(phone.getCallState());
-                if (callCounter > 500 || phone.getCallState() != 0) {
+                if (callCounter > 500 || phone.getCallState() == 3) {
                     callCounter = 0
                     running = false
                 }
