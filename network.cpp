@@ -50,8 +50,8 @@ void UDP::readReady()
     socket->readDatagram(netData.data(), netData.size(),
                          &sender, &senderPort);
 
-    qDebug() << "Message from: " << sender.toString();
-    qDebug() << "Message port: " << senderPort;
+//    qDebug() << "Message from: " << sender.toString();
+//    qDebug() << "Message port: " << senderPort;
     emit dataReady();
 }
 
@@ -61,7 +61,7 @@ void UDP::notification()
     QHostAddress sender;
     quint16 senderPort;
     notificationSocket->readDatagram(notifData.data(),notifData.size(),&sender,&senderPort);
-    qDebug()<<"sende: "<<sender.toString();
+//    qDebug()<<"sende: "<<sender.toString();
 
 
     QDomDocument doc;

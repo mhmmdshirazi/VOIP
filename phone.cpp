@@ -117,7 +117,6 @@ void phone::startAudioRead(QHostAddress destinationIP)
 void phone::stopAndPlay()
 {
     m_output = m_audioOutput->start();
-    m_audioInput->stop();
     connect(client,SIGNAL(dataReady()),this,SLOT(playSound()));
 }
 
@@ -131,6 +130,7 @@ void phone::requestCall(qint16 phoneNumber)
 void phone::requestAnswer(qint16 callerID)
 {
     client->answerCall(myPhoneNumber,callerID);
+    startAudioRead(destinationIPGlobal);
     stopAndPlay();
 }
 
@@ -207,6 +207,7 @@ void phone::handleCall(qint16 phoneNumber, qint16 callerID, QHostAddress callerI
 {
     if (phoneNumber == myPhoneNumber) {
         emit onCalling(callerID);
+        destinationIPGlobal = callerIP;
     }
 }
 
@@ -215,5 +216,6 @@ void phone::handleAnswer(qint16 destNumber, qint16 callerID, QHostAddress destIP
     if(destNumber == callingNumber && callerID == myPhoneNumber) {
         qDebug("answer!!!!");
         startAudioRead(destIP);
+        stopAndPlay();
     }
 }
