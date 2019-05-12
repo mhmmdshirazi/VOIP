@@ -2,10 +2,6 @@ import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.3
 Item {
-
-    Material.theme: Material.Dark
-    Material.accent: Material.DeepOrange
-
     Timer {
         interval: 16
         running: true
@@ -48,7 +44,8 @@ Item {
             onTriggered: {
                 phone.requestCall(phoneNumber.text)
                 callCounter = callCounter +1
-                if (callCounter > 500) {
+                console.log(phone.getCallState());
+                if (callCounter > 500 || phone.getCallState() != 0) {
                     callCounter = 0
                     running = false
                 }

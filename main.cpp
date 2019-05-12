@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
     QQuickWindow *window = qobject_cast<QQuickWindow *>(topLevel);
 
     QObject::connect(myPhone,SIGNAL(onCalling(QVariant)),window,SLOT(incommingCall(QVariant)));
+    QObject::connect(myPhone,SIGNAL(answered(QVariant)),window,SLOT(outGoingCallResponse(QVariant)));
 
 ///////////////////////////////
     if (engine.rootObjects().isEmpty())

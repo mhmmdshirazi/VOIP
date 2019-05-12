@@ -28,7 +28,11 @@ public:
     Q_INVOKABLE void requestAnswer(qint16 callerID);
     Q_INVOKABLE void savePhoneNumber(qint16 phoneNumber);
     Q_INVOKABLE qint16 loadPhoneNumber();
+    Q_INVOKABLE void setCallState(int callState);
+    Q_INVOKABLE int getCallState();
+
     int ApplyVolumeToSample(short iSample);
+
 private:
     QAudioDeviceInfo m_Inputdevice;
     QAudioDeviceInfo m_Outputdevice;
@@ -46,6 +50,7 @@ private:
 
     qint16 callingNumber;
     QHostAddress destinationIPGlobal;
+    int callState;
 private slots:
     void readMore();
     void playSound();
@@ -54,6 +59,7 @@ public slots:
     void handleAnswer(qint16 destNumber, qint16 callerID, QHostAddress destIP);
 signals:
     void onCalling(QVariant callerNum);
+    void answered(QVariant isAnswered);
 };
 
 #endif // AUDIO_H

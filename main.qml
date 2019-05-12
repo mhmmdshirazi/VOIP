@@ -11,6 +11,26 @@ Window {
 
     Material.theme: Material.Dark
     Material.accent: Material.DeepOrange
+    PageBG {
+        anchors.fill: parent
+        z: -10
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+            onPressed: {
+                console.log(callState.state)
+                Qt.inputMethod.hide()
+            }
+        }
+    }
+    ////////////////////////////// Call state
+    /// callState
+    /// Free :0
+    /// incommingCall: 1
+    /// outGoingCall: 2
+    /// Talking: 3
+
+    ///////////////////////////// incoming call slot
     property int callerID: 0
     function incommingCall(CI) {
         calling.running = true
@@ -18,6 +38,13 @@ Window {
         answer.visible = true
         reject.visible = true
         callerID = CI
+        phone.setCallState(1);
+    }
+    //////////////////////////// outgoing call responsed slot
+    function outGoingCallResponse (isAnswered) {
+        phone.setCallState(3);
+        swipeView.visible= false
+        talkingPage.visible=true
     }
 
     TabBar {
@@ -50,7 +77,7 @@ Window {
 
         }
     }
-
+//////////////////////////////////////// answering and ringing
     Button {
         id: answer
         height: 36
@@ -66,6 +93,9 @@ Window {
         }
         onClicked: {
             phone.requestAnswer(callerID)
+            phone.setCallState(3);
+            swipeView.visible= false
+            talkingPage.visible=true
         }
     }
 
@@ -142,38 +172,34 @@ Window {
             }
         }
     }
-    PageBG {
+
+/////////////// Talking
+    Item {
+        id: talkingPage
         anchors.fill: parent
-        z: -10
-        MouseArea {
-            id: mouseArea
-            anchors.fill: parent
-            onPressed: {
-                console.log("clicked")
-                Qt.inputMethod.hide()
+        visible: false
+        Button {
+            id: endCall
+            width: 130
+            height: 36
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: parent.height*0.7
+            visible: true
+            text: qsTr("End Call")
+            background: Rectangle{
+                color: endCall.down ? "#FFA0A0" : "#FF0000"
+                border.color: endCall.down ? "#000000" : "#FF0000"
+            }
+
+            onClicked: {
+                phone.setCallState(3);
+                swipeView.visible= true
+                talkingPage.visible=false
+                ///TODO: endcall
             }
         }
     }
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*##^## Designer {
-    D{i:0;height:667;width:375}D{i:7;anchors_width:200;anchors_x:88}
-}
- ##^##*/
