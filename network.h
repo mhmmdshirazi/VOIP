@@ -7,6 +7,8 @@
 #include <QString>
 #include <QDomDocument>
 #include <QDomNodeList>
+#include <QNetworkInterface>
+
 
 class UDP : public QObject
 {
@@ -14,10 +16,11 @@ class UDP : public QObject
 public:
     explicit UDP(QObject *parent = nullptr);
     void HelloUDP();
-    void sendUDP(char *data, qint64 len);
+    void sendUDP(char *data, qint64 len, QHostAddress destinationIP);
     void requestCall(qint16 phoneNumber,qint16 myPhoneNumber);
     void answerCall(qint16 myPhoneNumber,qint16 callerID);
     QByteArray netData;
+    QHostAddress myAddress;
 public slots:
     void readReady();
     void notification();

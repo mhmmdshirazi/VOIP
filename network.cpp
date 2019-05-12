@@ -4,21 +4,28 @@
 UDP::UDP(QObject *parent) :
         QObject(parent)
 {
-    // create a QUDP socket
-    socket = new QUdpSocket(this);
-    socket->bind(QHostAddress("192.168.1.4"), 1235);
-    connect(socket, SIGNAL(readyRead()),this,SLOT(readReady()));
 
     notificationSocket = new QUdpSocket(this);
     notificationSocket->bind(QHostAddress::Any,2020);
     connect(notificationSocket, SIGNAL(readyRead()),this,SLOT(notification()));
+    const QHostAddress &localhost = QHostAddress(QHostAddress::LocalHost);
+    for (const QHostAddress &address: QNetworkInterface::allAddresses()) {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != localhost && address.toString().contains("192"))
+            myAddress = address;
+    }
+    // create a QUDP socket for voice
+    qDebug()<<"my ip address is "<<myAddress.toString();
+    socket = new QUdpSocket(this);
+    socket->bind(myAddress, 1235);
+    connect(socket, SIGNAL(readyRead()),this,SLOT(readReady()));
+
 
 }
 
 
-void UDP::sendUDP(char *data, qint64 len)
+void UDP::sendUDP(char *data, qint64 len, QHostAddress destinationIP)
 {
-    socket->writeDatagram(data,len, QHostAddress("192.168.1.2"), 1235);
+    socket->writeDatagram(data,len, destinationIP, 1235);
 }
 
 void UDP::requestCall(qint16 phoneNumber,qint16 myPhoneNumber)
@@ -54,7 +61,7 @@ void UDP::notification()
     QHostAddress sender;
     quint16 senderPort;
     notificationSocket->readDatagram(notifData.data(),notifData.size(),&sender,&senderPort);
-
+    qDebug()<<"sende: "<<sender.toString();
 
 
     QDomDocument doc;

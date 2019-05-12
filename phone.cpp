@@ -71,7 +71,7 @@ void phone::createAudioInput()
     qreal linearVolume = QAudio::convertVolume(100 / qreal(100),
                                                QAudio::LogarithmicVolumeScale,
                                                QAudio::LinearVolumeScale);
-//    m_audioInput->setBufferSize(500);
+    //    m_audioInput->setBufferSize(500);
     m_audioInput->setVolume(linearVolume);
     qDebug() << m_Inputdevice.preferredFormat();
 }
@@ -81,14 +81,16 @@ void phone::createAudioInput()
 /// \brief audio::startAudioRead
 ///
 
-void phone::startAudioRead()
+void phone::startAudioRead(QHostAddress destinationIP)
 {
-//    m_pushTimer->start(50);
+    //    m_pushTimer->start(50);
+    qDebug()<< "dest ip is" << destinationIP.toString();
     m_input = m_audioInput->start();
     //connect readyRead signal to readMore slot.
     //Call readmore when audio samples fill in inputbuffer
+    destinationIPGlobal = destinationIP;
     connect(m_input, SIGNAL(readyRead()), SLOT(readMore()));
-//    connect(m_pushTimer, SIGNAL(timeout()), SLOT(readMore()));
+    //    connect(m_pushTimer, SIGNAL(timeout()), SLOT(readMore()));
 }
 
 
@@ -129,6 +131,7 @@ void phone::requestCall(qint16 phoneNumber)
 void phone::requestAnswer(qint16 callerID)
 {
     client->answerCall(myPhoneNumber,callerID);
+    stopAndPlay();
 }
 
 void phone::savePhoneNumber(qint16 phoneNumber)
@@ -180,23 +183,21 @@ void phone::readMore()
     const int BufferSize = 4096;
     if (len > BufferSize)
         len = BufferSize;
-
     QByteArray buffer(len, 0);
-
     qint64 l = m_input->read(buffer.data(), len);
-    //if (l > 0) {
-        qDebug() << "l is " << l <<" len is" << len << " ye data is :" << (int)buffer.at(0) ;
-        client->sendUDP(buffer.data(),l);
-    //}
-    //client->sendUDP("salam fatemeye man",strlen("salam fatemeye man"));
-    //buffer.resize(l);
-    //saveData.append(buffer);
+    bool conversionOK = false;
+    QHostAddress ip4Address(destinationIPGlobal.toIPv4Address(&conversionOK));
+
+    qDebug()<< "dest ip is" << ip4Address.toString();
+    qDebug() << "l is " << l <<" len is" << len << " ye data is :" << (int)buffer.at(0) ;
+    client->sendUDP(buffer.data(),l,ip4Address);
+
 }
 
 void phone::playSound()
 {
-//    qDebug()<< "net :" << client->netData.count() << "audio :"<< m_audioOutput->bytesFree();
-//    while(m_audioOutput->bytesFree() < client->netData.count()) {}
+    //    qDebug()<< "net :" << client->netData.count() << "audio :"<< m_audioOutput->bytesFree();
+    //    while(m_audioOutput->bytesFree() < client->netData.count()) {}
     m_output->write(client->netData.data(),client->netData.count());
     //qDebug() << (int)client->netData.data()[100];
 
@@ -213,5 +214,6 @@ void phone::handleAnswer(qint16 destNumber, qint16 callerID, QHostAddress destIP
 {
     if(destNumber == callingNumber && callerID == myPhoneNumber) {
         qDebug("answer!!!!");
+        startAudioRead(destIP);
     }
 }

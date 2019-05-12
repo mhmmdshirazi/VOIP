@@ -22,7 +22,7 @@ public:
     void initializeAudio();
     void createAudioInput();
     void createAudioOutput();
-    Q_INVOKABLE void startAudioRead();
+    Q_INVOKABLE void startAudioRead(QHostAddress destinationIP);
     Q_INVOKABLE void stopAndPlay();
     Q_INVOKABLE void requestCall(qint16 phoneNumber);
     Q_INVOKABLE void requestAnswer(qint16 callerID);
@@ -45,6 +45,7 @@ private:
     qint16 myPhoneNumber;
 
     qint16 callingNumber;
+    QHostAddress destinationIPGlobal;
 private slots:
     void readMore();
     void playSound();
